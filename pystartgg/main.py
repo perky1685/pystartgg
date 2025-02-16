@@ -5,62 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def MakeRequest(tourneySlug: str):
-    API_KEY = os.getenv("API_KEY")
-    EVENT_QUERY = """query ($tourneySlug: String!){
-    tournament(slug: $tourneySlug){
-        id
-        countryCode
-        events(filter: {videogameId: "33945"}){
-            id
-            name
-            numEntrants
-            startAt
-            videogame {
-                id
-                displayName
-            }
-            entrants (query: {page: 1}) {
-                nodes {
-                    participants{
-                        player {
-                            id
-                            prefix
-                            gamerTag
-                        }
-                    }
-                    seeds {
-                        seedNum
-                    }
-                    standing {
-                        placement
-                    }
-                }
-            }
-        }
-    }
-    }"""
-
-    variables = {
-        "tourneySlug": tourneySlug,
-        "videogameId": "33945"
-    }
-
-    headers = {
-            'Authorization': 'Bearer ' + API_KEY,
-            'Content-Type': 'application/json'
-    }
-
-    response = requests.post(
-        "https://api.smash.gg/gql/alpha",
-        headers=headers,
-        json={'query': EVENT_QUERY, 'variables': variables}
-    )
-
-    return response.json()
-
 def GetEventResults(tourneySlug: str, videogameId: int):
-    API_KEY = os.getenv("API_KEY")
     EVENT_QUERY = """query ($tourneySlug: String!, $videogameId: [ID]){
     tournament(slug: $tourneySlug){
         events(filter: {videogameId: $videogameId}){
@@ -76,6 +21,9 @@ def GetEventResults(tourneySlug: str, videogameId: int):
                             id
                             prefix
                             gamerTag
+                        }
+                        user{
+                            id
                         }
                     }
                     seeds {
@@ -95,21 +43,10 @@ def GetEventResults(tourneySlug: str, videogameId: int):
         "videogameId": videogameId  # Added videogameId here
     }
 
-    headers = {
-            'Authorization': 'Bearer ' + API_KEY,
-            'Content-Type': 'application/json'
-    }
-
-    response = requests.post(
-        "https://api.smash.gg/gql/alpha",
-        headers=headers,
-        json={'query': EVENT_QUERY, 'variables': variables}
-    )
-
-    return response.json()
+    API_KEY = os.getenv("API_KEY")
+    return MakeRequest(API_KEY, EVENT_QUERY, variables)
 
 def GetTournamentResults(tourneySlug: str):
-    API_KEY = os.getenv("API_KEY")
     EVENT_QUERY = """query ($tourneySlug: String!){
     tournament(slug: $tourneySlug){
         events{
@@ -143,21 +80,10 @@ def GetTournamentResults(tourneySlug: str):
         "tourneySlug": tourneySlug,
     }
 
-    headers = {
-            'Authorization': 'Bearer ' + API_KEY,
-            'Content-Type': 'application/json'
-    }
-
-    response = requests.post(
-        "https://api.smash.gg/gql/alpha",
-        headers=headers,
-        json={'query': EVENT_QUERY, 'variables': variables}
-    )
-
-    return response.json()
+    API_KEY = os.getenv("API_KEY")
+    return MakeRequest(API_KEY, EVENT_QUERY, variables)
 
 def GetTournamentInformation(tourneySlug: str):
-    API_KEY = os.getenv("API_KEY")
     EVENT_QUERY = """query ($tourneySlug: String!){
     tournament(slug: $tourneySlug){
         id
@@ -170,7 +96,7 @@ def GetTournamentInformation(tourneySlug: str):
         numAttendees
         timezone
         venueName
-        events(filter: {videogameId: "33945"}){
+        events{
             id
             name
             numEntrants
@@ -187,6 +113,37 @@ def GetTournamentInformation(tourneySlug: str):
         "tourneySlug": tourneySlug,
     }
 
+    API_KEY = os.getenv("API_KEY")
+    return MakeRequest(API_KEY, EVENT_QUERY, variables)
+
+def GetEventsInformation(tourneySlug: str, videogameId):
+    #[] for all events
+    #[33945, 48548] for specific events
+    EVENT_QUERY = """query ($tourneySlug: String!, $videogameId: [ID]){
+    tournament(slug: $tourneySlug){
+        events(filter: {videogameId: $videogameId}) {
+            id
+            name
+            numEntrants
+            startAt
+            createdAt
+            videogame {
+                id
+                displayName
+            }
+        }
+    }
+    }"""
+
+    variables = {
+        "tourneySlug": tourneySlug,
+        "videogameId": videogameId,
+    }
+
+    API_KEY = os.getenv("API_KEY")
+    return MakeRequest(API_KEY, EVENT_QUERY, variables)
+
+def MakeRequest(API_KEY, EVENT_QUERY, variables):
     headers = {
             'Authorization': 'Bearer ' + API_KEY,
             'Content-Type': 'application/json'
@@ -200,6 +157,8 @@ def GetTournamentInformation(tourneySlug: str):
 
     return response.json()
 
+
 #print(json.dumps(GetResults("kayane-cup-arc-world-tour-2024", 33945), indent=2))
 #print(GetTournamentInformation("kayane-cup-arc-world-tour-2024"))
 #print(GetEventResults("kayane-cup-arc-world-tour-2024", 33945))
+#print(GetEventsInformation("kayane-cup-arc-world-tour-2024", [33945, 48548]))
