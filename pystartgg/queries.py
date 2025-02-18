@@ -103,7 +103,7 @@ PLAYER_TOURNAMENT_QUERY = """
         user(slug: $slug) {
             id
             tournaments (query: {page: $page}) {
-                nodes {
+                nodes{
                     id
                     slug
                     city

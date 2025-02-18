@@ -86,37 +86,6 @@ def GetEventsInformation(tourneySlug: str, videogameId):
     API_KEY = os.getenv("API_KEY")
     return MakeRequest(API_KEY, EVENT_INFORMATION_QUERY, variables)
 
-def GetPlayerInformation(slug: str):
-
-    variables = {
-        "slug": slug,
-    }
-
-    API_KEY = os.getenv("API_KEY")
-    return MakeRequest(API_KEY, PLAYER_INFORMATION_QUERY, variables)
-
-def GetPlayerTournaments(slug: str, page: int, videogameId):
-
-    variables = {
-        "slug": slug,
-        "page": page,
-    }
-
-    API_KEY = os.getenv("API_KEY")
-    return MakeRequest(API_KEY, PLAYER_TOURNAMENT_QUERY, variables)
-
-
-def GetPlayerEvents(slug: str, page: int, videogameId):
-
-    variables = {
-        "slug": slug,
-        "page": page,
-        "videogameId": videogameId,
-    }
-
-    API_KEY = os.getenv("API_KEY")
-    return MakeRequest(API_KEY, PLAYER_EVENTS_QUERY, variables)
-
 
 #print(json.dumps(GetResults("kayane-cup-arc-world-tour-2024", 33945), indent=2))
 #print(GetTournamentInformation("kayane-cup-arc-world-tour-2024"))
@@ -124,4 +93,3 @@ def GetPlayerEvents(slug: str, page: int, videogameId):
 #print(GetEventsInformation("kayane-cup-arc-world-tour-2024", [33945, 48548]))
 #print(GetPlayerInformation("c1aeaece"))
 #print(GetPlayerEvents("c1aeaece", 1, [33945]))
-#print(GetPlayerTournaments("c1aeaece", 2))
